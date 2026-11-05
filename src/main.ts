@@ -142,7 +142,7 @@ function updateTimer(): void {
 async function startRecording(): Promise<void> {
   try {
     const deviceId = micSelect.value;
-    stream = await navigator.mediaDevices.getUserMedia({ audio: { ...(deviceId ? { deviceId: { exact: deviceId } } : {}), echoCancellation: false, noiseSuppression: false, autoGainControl: true, channelCount: 1 } });
+    stream = await navigator.mediaDevices.getUserMedia({ audio: { ...(deviceId ? { deviceId: { exact: deviceId } } : {}), echoCancellation: false, noiseSuppression: true, autoGainControl: false, channelCount: 1 } });
     await loadInputDevices();
     chunks = [];
     recorder = new MediaRecorder(stream);

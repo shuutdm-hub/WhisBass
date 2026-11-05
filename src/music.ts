@@ -44,7 +44,7 @@ function toBassRange(pitch: number): number {
 
 export function processNotes(notes: NoteEvent[], key: MusicalKey): ProcessedNote[] {
   return notes
-    .filter((note) => note.durationSeconds >= 0.06 && note.amplitude >= 0.02)
+    .filter((note) => note.durationSeconds >= 0.1 && note.amplitude >= 0.1)
     .sort((a, b) => a.startTimeSeconds - b.startTimeSeconds)
     .map((note) => ({ ...note, originalPitch: note.pitch, pitch: toBassRange(nearestScalePitch(note.pitch, key)) }));
 }
