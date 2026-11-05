@@ -21,14 +21,16 @@ function addBassVoice(context: BaseAudioContext, destination: AudioNode, pitch: 
   fundamental.frequency.value = frequency;
   overtone.frequency.value = frequency * 2;
   const end = start + Math.max(0.1, duration);
-  const decayEnd = Math.min(end, start + 0.08);
-  const releaseStart = Math.max(decayEnd, end - 0.045);
-  gain.gain.setValueAtTime(0.0001, start);
-  gain.gain.linearRampToValueAtTime(0.38, start + 0.008);
-  gain.gain.linearRampToValueAtTime(0.28, decayEnd);
-  // ピアノロールの線が終わる直前まで、聴き取れる一定音量を明示的に保つ。
-  gain.gain.setValueAtTime(0.28, releaseStart);
-  gain.gain.exponentialRampToValueAtTime(0.0001, end);
+  // 音符の長さ全体に対応する包絡線。長い音ほど持続区間も比例して長くなる。
+  const envelope = new Float32Array(128);
+  for (let index = 0; index < envelope.length; index += 1) {
+    const position = index / (envelope.length - 1);
+    if (position < 0.035) envelope[index] = 0.0001 + (0.38 - 0.0001) * (position / 0.035);
+    else if (position < 0.12) envelope[index] = 0.38 - (0.38 - 0.3) * ((position - 0.035) / 0.085);
+    else if (position < 0.94) envelope[index] = 0.3;
+    else envelope[index] = Math.max(0.0001, 0.3 * (1 - (position - 0.94) / 0.06));
+  }
+  gain.gain.setValueCurveAtTime(envelope, start, end - start);
   filter.type = "lowpass";
   filter.frequency.value = 1600;
   filter.Q.value = 0.7;

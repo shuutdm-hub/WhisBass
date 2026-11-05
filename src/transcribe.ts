@@ -64,10 +64,10 @@ function cleanNoteEvents(notes: NoteEvent[]): NoteEvent[] {
     Number.isFinite(note.pitch)
     && note.pitch >= 45
     && note.pitch <= 108
-    && note.durationSeconds >= 0.08
+    && note.durationSeconds >= 0.055
     && note.amplitude >= 0.08
   );
-  return mergeFragments(keepMonophonic(plausible)).filter((note) => note.durationSeconds >= 0.11 && note.amplitude >= 0.1);
+  return mergeFragments(keepMonophonic(plausible)).filter((note) => note.durationSeconds >= 0.07 && note.amplitude >= 0.1);
 }
 
 async function prepareMonoBuffer(audioBuffer: AudioBuffer): Promise<AudioBuffer> {
@@ -126,7 +126,7 @@ export async function transcribeAudio(audioBuffer: AudioBuffer, onProgress: (val
     },
     (progress) => onProgress(Math.round(progress * 100)),
   );
-  const events = noteFramesToTime(addPitchBendsToNoteEvents(contours, outputToNotesPoly(frames, onsets, 0.35, 0.42, 7)));
+  const events = noteFramesToTime(addPitchBendsToNoteEvents(contours, outputToNotesPoly(frames, onsets, 0.35, 0.42, 4)));
   return cleanNoteEvents(events.map((event) => ({
     pitch: event.pitchMidi,
     startTimeSeconds: event.startTimeSeconds,
